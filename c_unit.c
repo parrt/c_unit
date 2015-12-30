@@ -23,13 +23,13 @@ SOFTWARE.
 */
 #include <stdio.h>
 #include <string.h>
-#include "cunit.h"
+#include "c_unit.h"
 #include <signal.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-void (*cunit_setup)()		= NULL;
-void (*cunit_teardown)()	= NULL;
+void (*c_unit_setup)()		= NULL;
+void (*c_unit_teardown)()	= NULL;
 
 static const char *current_test_name;
 
@@ -138,13 +138,14 @@ setup_error_handlers() {
 	signal(SIGBUS, handle_sys_errors);
 }
 
-void cunit_test(void (*f)(), const char funcname[]) {
+/* Return 0 if test succeeds, else -1 upon failure */
+int c_unit_test(void (*f)(), const char funcname[]) {
 	current_test_name = funcname;
 	setup_error_handlers(); // ensure signals are trapped each time
 	int exit_code = 0;
-	if ( cunit_setup!=NULL ) {
+	if ( c_unit_setup!=NULL ) {
 		if ( setjmp(longjmp_env)==0 ) {
-			(*cunit_setup)();
+			(*c_unit_setup)();
 		}
 		else {
 			fprintf(stderr, "FAIL SETUP %s\n", funcname);
@@ -159,14 +160,14 @@ void cunit_test(void (*f)(), const char funcname[]) {
 		fprintf(stderr, "FAIL %s\n", funcname);
 		exit_code = -1;
 	}
-	if ( cunit_teardown!=NULL ) {
+	if ( c_unit_teardown!=NULL ) {
 		if ( setjmp(longjmp_env)==0 ) {
-			(*cunit_teardown)();
+			(*c_unit_teardown)();
 		}
 		else {
 			fprintf(stderr, "FAIL TEARDOWN %s\n", funcname);
 			exit_code = -1;
 		}
 	}
-	if ( exit_code != 0 ) exit(exit_code);
+	return exit_code;
 }
