@@ -65,3 +65,28 @@ assertion failure in bad_test: strcmp "foo" == "bar" (foo == bar)
 FAIL bad_test
 test bad_ptr is confused; signal SIGSEGV (11)
 ```
+
+You can also run with ctest via cmake:
+
+```bash
+$ make test
+Running tests...
+Test project /Users/parrt/github/c_unit
+    Start 1: sample_test
+1/1 Test #1: sample_test ......................***Failed    0.00 sec
+
+0% tests passed, 1 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+
+The following tests FAILED:
+	  1 - sample_test (Failed)
+Errors while running CTest
+make: *** [test] Error 8
+```
+
+And now with valgrind checking:
+
+```bash
+$ ctest -D ExperimentalMemCheck
+```

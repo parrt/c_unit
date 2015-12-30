@@ -17,6 +17,7 @@ void stuff() {
 	assert_addr_equal(p,q);
 	char *r = NULL;
 	assert_addr_not_equal(p,r);
+	free(p); // leave this off and valgrind will complain
 }
 
 void other_stuff() {
@@ -41,7 +42,9 @@ int main(int argc, char *argv[])
 	test(other_stuff);
 
 	test(bad_test);
-	test(bad_ptr);
 
-	return 0;
+	// uncomment next line to test a bad memory reference, forcing program to bail out with non-0 error code
+//	test(bad_ptr);
+
+	return c_unit_fails; // return how many test()s failed.  ctest likes 0 return value to mean no failures
 }

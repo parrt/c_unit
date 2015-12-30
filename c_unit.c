@@ -124,11 +124,14 @@ handle_sys_errors(int errno)
 {
 	char *signame = "UNKNOWN";
 
-	if (errno == SIGSEGV)
-		signame = "SIGSEGV";
-	else if (errno == SIGBUS)
-		signame = "SIGBUS";
-	fprintf(stderr, "test %s is confused; signal %s (%d)\n", current_test_name, signame, errno);
+	if (errno == SIGINT) {
+		fprintf(stderr, "FAIL %s. Tests killed manually\n", current_test_name);
+		exit(errno);
+	}
+
+	if (errno == SIGSEGV) signame = "SIGSEGV";
+	else if (errno == SIGBUS) signame = "SIGBUS";
+	fprintf(stderr, "FAIL %s; bailing out due to signal %s (%d)\n", current_test_name, signame, errno);
 	exit(errno);
 }
 
@@ -136,6 +139,7 @@ static inline void
 setup_error_handlers() {
 	signal(SIGSEGV, handle_sys_errors);
 	signal(SIGBUS, handle_sys_errors);
+	signal(SIGINT, handle_sys_errors);
 }
 
 /* Return 0 if test succeeds, else -1 upon failure */

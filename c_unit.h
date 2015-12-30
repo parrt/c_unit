@@ -27,7 +27,7 @@ SOFTWARE.
 extern void (*c_unit_setup)();
 extern void (*c_unit_teardown)();
 
-#define test(f)						c_unit_test(f, #f)
+#define test(f)						{int r=c_unit_test(f, #f); if (r!=0) c_unit_fails++;}
 #define assert_true(a)			    _assert_true(a,#a,__func__)
 #define assert_false(a)			    _assert_false(a,#a,__func__)
 #define assert_equal(a,b)			_assert_equal((unsigned long)a,(unsigned long)b,#a,#b,__func__)
@@ -55,3 +55,5 @@ void _assert_strn_equal(char *a, char *b, size_t n, const char as[], const char 
 void _assert_strn_not_equal(char *a, char *b, size_t n, const char as[], const char bs[], const char funcname[]);
 
 int c_unit_test(void (*f)(), const char funcname[]);
+
+static int c_unit_fails = 0; // how many failures did test() find?
