@@ -175,3 +175,50 @@ int c_unit_test(void (*f)(), const char funcname[]) {
 	}
 	return exit_code;
 }
+
+void save_string_in_file(char *filename, char *s) {
+	char fname[400];
+	strcpy(fname, get_temp_dir());
+	strcat(fname, filename);
+
+	FILE *f = fopen(fname, "w");
+	if ( f==NULL ) {
+		fprintf(stderr, "can't open %s\n", filename);
+		return;
+	}
+	fputs(s, f);
+	fclose(f);
+}
+
+/** Return a diff string indicating how s1 and s2 differ */
+char *strdiff(char* s1, char* s2) {
+	save_string_in_file("s1.txt", s1);
+	save_string_in_file("s2.txt", s2);
+
+	char cmd[400];
+	strcpy(cmd, "diff");
+	strcat(cmd, " ");
+	strcat(cmd, get_temp_dir());
+	strcat(cmd, "s1.txt");
+	strcat(cmd, " ");
+	strcat(cmd, get_temp_dir());
+	strcat(cmd, "s2.txt");
+
+	FILE* fp = popen(cmd, "r");
+	size_t diffsize = 100000;
+	int bufsize = 1000;
+	char *diff = malloc(diffsize); // 100k buffer for output
+	diff[0] = '\0';
+	char buf[bufsize];
+
+	while ( fgets(buf, bufsize, fp) != NULL ) {
+		strcat(diff, buf);
+	}
+	pclose(fp);
+	return diff;
+}
+
+char *get_temp_dir() {
+	char *folder = getenv("TMPDIR");
+	return folder ? folder : "/tmp/";
+}
