@@ -190,8 +190,8 @@ void save_string_in_file(char *filename, char *s) {
 	fclose(f);
 }
 
-/** Return a diff string indicating how s1 and s2 differ */
-char *strdiff(char* s1, char* s2) {
+/** Return a diff string indicating how s1 and s2 differ; caller is responsible for free'ing buffer */
+char *strdiff(char* s1, char* s2, size_t diffsize) {
 	save_string_in_file("s1.txt", s1);
 	save_string_in_file("s2.txt", s2);
 
@@ -205,9 +205,8 @@ char *strdiff(char* s1, char* s2) {
 	strcat(cmd, "s2.txt");
 
 	FILE* fp = popen(cmd, "r");
-	size_t diffsize = 100000;
-	int bufsize = 1000;
-	char *diff = malloc(diffsize); // 100k buffer for output
+	int bufsize = 1000; // max linesize
+	char *diff = malloc(diffsize);
 	diff[0] = '\0';
 	char buf[bufsize];
 

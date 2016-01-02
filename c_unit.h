@@ -57,7 +57,7 @@ void _assert_strn_not_equal(char *a, char *b, size_t n, const char as[], const c
 int c_unit_test(void (*f)(), const char funcname[]);
 
 void save_string_in_file(char *filename, char *s);
-char *strdiff(char* s1, char* s2);
+char *strdiff(char* s1, char* s2, size_t diffsize);
 char *get_temp_dir();
 
 static int c_unit_fails = 0; // how many failures did test() find?
